@@ -1,8 +1,8 @@
 'use strict';
 
 (function () {
-  var loadURL = 'https://js.dump.academy/keksobooking/data';
-  var saveURL = 'https://js.dump.academy/keksobooking';
+  var loadURL = 'https://javascript.pages.academy/keksobooking/data';
+  var saveURL = 'https://javascript.pages.academy/keksobooking';
   var serverMessages = {
     connectionError: 'Произошла ошибка соединения',
     timeoutError: 'Запрос не успел выполниться за ',

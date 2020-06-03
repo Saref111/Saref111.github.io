@@ -204,7 +204,7 @@ img {
       background-image: url("../img/index-background-mobile@2x.jpg"), linear-gradient(#64a83b 0, #64a83b 305px, #ffffff 305px);
       background-repeat: no-repeat;
       background-size: 320px 305px, contain;
-      background-position: 0 center; } }
+      background-position: center 0; } }
 
 .cat-food__title {
   font-family: "Oswald", "Arial", sans-serif;

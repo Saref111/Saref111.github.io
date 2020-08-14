@@ -28002,28 +28002,47 @@ class Statistic extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["def
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TripInfo; });
-/* harmony import */ var _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-component.js */ "./src/components/abstract-component.js");
+/* harmony import */ var _abstract_smart_component_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstract-smart-component.js */ "./src/components/abstract-smart-component.js");
+/* harmony import */ var _utils_util_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/util.js */ "./src/utils/util.js");
 
 
-const createTripInfoElement = () => {
+
+const createTripInfoElement = (price, dates, places) => {
   return (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
+        <h1 class="trip-info__title">${Object(_utils_util_js__WEBPACK_IMPORTED_MODULE_1__["stringifyPlaces"])(places)}</h1>
 
-        <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;20</p>
+        <p class="trip-info__dates">${Object(_utils_util_js__WEBPACK_IMPORTED_MODULE_1__["stringifyTripDuration"])(dates)}</p>
       </div>
 
       <p class="trip-info__cost">
-        Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
+        Total: &euro;&nbsp;<span class="trip-info__cost-value">${price}</span>
       </p>
     </section>`
   );
 };
 
-class TripInfo extends _abstract_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+class TripInfo extends _abstract_smart_component_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor() {
+    super();
+
+    this._totalPrice = 0;
+    this._dates = [];
+    this._places = [];
+  }
+
   getTemplate() {
-    return createTripInfoElement();
+    return createTripInfoElement(this._totalPrice, this._dates, this._places);
+  }
+
+  setData(totalPrice, dates, places) {
+    this._totalPrice = totalPrice;
+    this._dates = dates;
+    this._places = places;
+  }
+
+  recoveryListeners() {
   }
 }
 
@@ -28522,13 +28541,22 @@ class TripController {
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
-  _onDataChange(pointController, oldData, newData) {
+  _updateTripInfo() {
+    this._tripInfoComponent.setData(
+        this._eventsModel.getTotalPrice(),
+        this._eventsModel.getAllDates(),
+        this._eventsModel.getAllPlaces()
+    );
+    this._tripInfoComponent.rerender();
+  }
 
+  _onDataChange(pointController, oldData, newData) {
     if (!newData) {
       this._api.deleteEvent(String(oldData.id))
         .then(() => {
           pointController.destroy();
           this._eventsModel.removeEvent(oldData.id);
+          this._updateTripInfo();
           this._updateEvents();
         })
         .catch(() => {
@@ -28539,6 +28567,7 @@ class TripController {
       this._api.createEvent(newData)
         .then((pointModel) => {
           this._eventsModel.addEvent(pointModel);
+          this._updateTripInfo();
           this._updateEvents();
           this._newButtonComponent.enabled();
         })
@@ -28552,6 +28581,7 @@ class TripController {
           const isSuccess = this._eventsModel.updateEvent(oldData.id, event);
 
           if (isSuccess) {
+            this._updateTripInfo();
             this._updateEvents();
           }
         })
@@ -28582,6 +28612,8 @@ class TripController {
     this._events = this._eventsModel.getEvents();
     let isFirstEvent = !this._events || this._events.length === 0;
     const containerElement = this._container.getElement();
+
+    this._updateTripInfo();
 
     const headerMainElement = document.querySelector(`.trip-main`);
     const tripEventsElement = document.querySelector(`.trip-events`);
@@ -28919,6 +28951,28 @@ class Points {
     this.updateEvent = this.updateEvent.bind(this);
   }
 
+  getTotalPrice() {
+    return this._events.reduce((acc, event) => {
+      acc += event.price;
+
+      return acc;
+    }, 0);
+  }
+
+  getAllPlaces() {
+    return this._events.map((event) => event.place);
+  }
+
+  getAllDates() {
+    let dates = [];
+    this._events.forEach((event) => {
+      dates.push(event.startTime);
+      dates.push(event.endTime);
+    });
+
+    return dates.sort((a, b) => a - b);
+  }
+
   getEvents() {
     return Object(_utils_filter_js__WEBPACK_IMPORTED_MODULE_1__["getEventsByFilter"])(this._events, this._activeFilterType);
   }
@@ -29206,11 +29260,13 @@ const countTime = (events) => {
 /*!***************************!*\
   !*** ./src/utils/util.js ***!
   \***************************/
-/*! exports provided: getRandomArrayElement, getRandomInt, addEventListenerBySelector, findEventObject, getTitleByType, getRandomDate, stringifyDate, stringifyTime, getDuration, getTitleByTypeInEditForm */
+/*! exports provided: stringifyPlaces, stringifyTripDuration, getRandomArrayElement, getRandomInt, addEventListenerBySelector, findEventObject, getTitleByType, getRandomDate, stringifyDate, stringifyTime, getDuration, getTitleByTypeInEditForm */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stringifyPlaces", function() { return stringifyPlaces; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stringifyTripDuration", function() { return stringifyTripDuration; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getRandomArrayElement", function() { return getRandomArrayElement; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getRandomInt", function() { return getRandomInt; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addEventListenerBySelector", function() { return addEventListenerBySelector; });
@@ -29268,6 +29324,40 @@ const stringifyTime = (time) => {
 
 const getDuration = (ms) => {
   return moment__WEBPACK_IMPORTED_MODULE_0___default.a.duration(ms, `milliseconds`).humanize();
+};
+
+const stringifyTripDuration = (dates) => {
+  if (!dates || dates.length === 0) {
+    return ``;
+  }
+
+  const start = dates[0];
+  const end = dates[dates.length - 1];
+
+  if (start.getMonth() === end.getMonth()) {
+    return moment__WEBPACK_IMPORTED_MODULE_0___default()(start).format(`MMM D${`&nbsp;&mdash;&nbsp;`}${moment__WEBPACK_IMPORTED_MODULE_0___default()(end).format(`D`)}`);
+  }
+
+  return `${moment__WEBPACK_IMPORTED_MODULE_0___default()(start).format(`MMM D`)}&nbsp;&mdash;&nbsp;${moment__WEBPACK_IMPORTED_MODULE_0___default()(end).format(`MMM D`)}`;
+};
+
+const stringifyPlaces = (places) => {
+  if (!places || places.length === 0) {
+    return ``;
+  }
+
+  if (places.length < 3) {
+    return places.reduce((acc, it, i) => {
+      if (i < places.length - 1) {
+        acc += `${it} &mdash; `;
+      } else {
+        acc += `${it}`;
+      }
+      return acc;
+    }, ``);
+  }
+
+  return `${places[0]} &mdash; ... &mdash; ${places[places.length - 1]}`;
 };
 
 

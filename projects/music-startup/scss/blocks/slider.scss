@@ -1,0 +1,33 @@
+.slider__title-wrapper {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 22px;
+}
+
+.slider__title {
+    margin: 0;
+    
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.slider__more {
+    font-weight: 600;
+    font-size: 20px;
+    color: $blue;
+}
+
+.slider__list-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.slider__list {
+    @include list-reset();
+
+    display: flex;
+
+    width: 1344px;
+    justify-content: space-between;
+}

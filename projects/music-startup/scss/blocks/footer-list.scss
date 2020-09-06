@@ -1,0 +1,32 @@
+.footer-list {
+    @include list-reset();
+
+    display: flex;
+    justify-content: space-between;
+
+    &--about {
+        width: 500px;
+    }
+
+    &--socials {
+        width: 18.55%;
+        margin-left: 20px;
+    }
+}
+
+.footer-list__link {
+    font-size: 16px;
+    line-height: 22px;
+}
+
+@media (min-width: $desktop) {
+    .footer-list {    
+        &--about {
+            width: 54%;
+        }
+    
+        &--socials {
+            width: 18.55%;
+        }
+    }
+}

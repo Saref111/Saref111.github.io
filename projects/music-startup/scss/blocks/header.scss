@@ -1,0 +1,23 @@
+.header {
+    background-color: $dark-blue;
+}
+
+.header__wrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1423px;
+    margin: 0 auto;
+    padding-right: 42px;
+    padding-left: 40px;
+    padding-top: 22px;
+    padding-bottom: 15px;
+}
+
+.header__logo-header {
+    margin-top: 7px;
+}
+
+.header__user-nav {
+    margin-right: -6px;
+}

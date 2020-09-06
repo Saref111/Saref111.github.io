@@ -1,0 +1,23 @@
+.main {
+    background-color: $bg-blue;
+
+    margin-bottom: 47px;
+}
+
+.main__wrapper {
+    width: 100%;
+    max-width: 1423px;
+    margin: 0 auto;
+    padding-left: 39px;
+    padding-right: 40px;
+    padding-top: 35px;
+}
+
+.main__menu {
+    margin-bottom: 38px;
+}
+
+.main__main-slider:not(:last-child) {
+    margin-bottom: 33px;
+}
+
